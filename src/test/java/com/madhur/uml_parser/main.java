@@ -7,9 +7,11 @@ public class FacadeTest extends TestCase{
     	{
         	super( testName );
     	}
+
 	protected void setUp(){
 		//TODO
 	}
+
 	public void testMain(){
 		//TODO
 	}
