@@ -2,6 +2,8 @@
 
  Parser which converts Java Source Code into a UML Class Diagram.
  
+Current plan is to use JavaParser(https://github.com/javaparser/javaparser) for parsing
+ 
 ## How to run?
  ```umlparser <source folder> <output file name>```
 
