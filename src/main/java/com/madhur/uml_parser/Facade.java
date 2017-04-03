@@ -3,15 +3,10 @@ package com.madhur.uml_parser;
 /**
  * Hello world!
  */
-public class Parcer_facade
+public class Facade 
 {
     public static void main( String[] args )
     {
         System.out.println( "Hello World!" );
     }
 }
-
-
-// TODO study java parser
-// TODO study yUML
-// TODO study aspectJ
