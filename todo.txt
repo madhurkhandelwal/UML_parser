@@ -1,1 +1,2 @@
 check what's the standard dir structure for saving the documentation and reference material
+Check whether its a good practise to upload IDE artifacts to github
