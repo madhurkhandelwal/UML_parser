@@ -69,14 +69,16 @@ public class Facade
         }
         // TODO use logger
         System.out.println(String.format("Outpath: %s\nInput Folder: %s\nClass Diagram: %s\nSeq Diagram: %s",
-                                         inputFolder, outputFolder, classDiagram, seqDiagram));
+                                         outputFolder, inputFolder, classDiagram, seqDiagram));
     }
 
     private void genClassDiagram(){
-        // TODO implement
+        ClassDiagramGenerator cdg =  new ClassDiagramGenerator(inputFolder, outputFolder);
+        cdg.generate();
     }
 
     private void genSeqDiagram(){
-        // TODO implement
+        SeqDiagramGenerator sdg =  new SeqDiagramGenerator(inputFolder, outputFolder);
+        sdg.generate();
     }
 }
