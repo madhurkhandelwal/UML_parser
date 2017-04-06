@@ -8,9 +8,11 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,6 +20,7 @@ import java.util.List;
 public class ClassDiagramGenerator{
     private String inputFolder, outputFolder;
     private HashMap<String, Boolean> isClassOrInterface;
+    private final String yumlURLstr = "https://yuml.me/diagram/plain/class/";
 
     public ClassDiagramGenerator(String inputFolder, String outputFolder){
         this.inputFolder = inputFolder;
@@ -25,10 +28,10 @@ public class ClassDiagramGenerator{
         isClassOrInterface = new HashMap<String, Boolean>();
     }
 
-    public void generate() throws FileNotFoundException {
+    public void generate() throws IOException {
         String[] javaFiles;
         CompilationUnit cu;
-        String yumlString;
+        String yumlString="";
 
         System.out.println("Generating class diagram(s)...");
         javaFiles = getAllJavaFiles(inputFolder);
@@ -37,6 +40,7 @@ public class ClassDiagramGenerator{
             cu = JavaParser.parse(new File(inputFolder, javaFile));
 
             // Assuming only classes or interfaces are present
+            // TODO add support for other cases as well
             List<TypeDeclaration<?>> classList = cu.getTypes();
             for (Node n : classList) {
                 ClassOrInterfaceDeclaration coi = (ClassOrInterfaceDeclaration) n;
@@ -46,7 +50,7 @@ public class ClassDiagramGenerator{
                 yumlString = generateYUMLString(coi);
             }
         }
-
+        generateImageFromYUMLString(yumlString);
         /*
         lambda expression to get all cus
         for each cu
@@ -83,14 +87,50 @@ public class ClassDiagramGenerator{
         String yumlString;
         String interfaceStr="", name, attrs="", methods="";
 
-        if(coi.isInterface())
-        {
-            interfaceStr = "<<interface>>";
-        }
+        interfaceStr = coi.isInterface() ? "<<interface>>" : "";
         name = coi.getNameAsString();
 
         yumlString = String.format("[%s%s|%s|%s]", interfaceStr, name, attrs, methods);
         System.out.println(yumlString);
         return yumlString;
+    }
+
+    private void generateImageFromYUMLString(String yumlString) throws IOException {
+        HttpURLConnection con = null;
+        FileOutputStream outputFile = null;
+        URL finalURL;
+
+        // TODO use try with resources
+        try{
+            // TODO use some inbuilt method to add 2 paths
+            outputFile = new FileOutputStream(outputFolder + "/classDiagram.png");
+            String finalURLStr = yumlURLstr + URLEncoder.encode(yumlString, "UTF-8") + ".png";
+            // TODO use logging
+            //System.out.println(finalURLStr);
+            finalURL = new URL(finalURLStr);
+
+            con = (HttpURLConnection) finalURL.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("Accept", "application/json");
+
+            // TODO handle 301
+            if (con.getResponseCode() != 200) {
+                throw new RuntimeException("HTTP request failed," +
+                                           "return code: " + con.getResponseCode());
+            }
+            InputStream is = con.getInputStream();
+
+            int numBytes;
+            byte[] buffer = new byte[1024]; // TODO check why 1024?
+            while ((numBytes = is.read(buffer)) != -1) {
+                outputFile.write(buffer, 0, numBytes);
+            }
+        }catch (IOException ioe){
+            // TODO handle it
+            throw ioe;
+        }finally {
+            if (con != null) con.disconnect();
+            if (outputFile != null) outputFile.close();
+        }
     }
 }

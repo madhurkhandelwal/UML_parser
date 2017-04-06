@@ -7,7 +7,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 
-import java.io.FileNotFoundException;
 // TODO check whether its anti-pattern to use 'import something.*', if not, why so?
 
 // TODO check style guide for Java, something similar to PEP8 maybe
@@ -83,7 +82,7 @@ public class Facade
         ClassDiagramGenerator cdg =  new ClassDiagramGenerator(inputFolder, outputFolder);
         try {
             cdg.generate();
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             // TODO exit?
         }
