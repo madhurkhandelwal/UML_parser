@@ -6,6 +6,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
+
+import java.io.FileNotFoundException;
 // TODO check whether its anti-pattern to use 'import something.*', if not, why so?
 
 // TODO check style guide for Java, something similar to PEP8 maybe
@@ -21,6 +23,11 @@ public class Facade
     public static void main( String[] args ){
         Facade f = new Facade();
         f.parseArguments(args);
+
+        // TODO there has to be a better way of expanding ~
+        f.inputFolder = f.inputFolder.replaceFirst("^~", System.getProperty("user.home"));
+        f.outputFolder = f.outputFolder.replaceFirst("^~", System.getProperty("user.home"));
+
         if (f.classDiagram){
             f.genClassDiagram();
         }
@@ -74,7 +81,12 @@ public class Facade
 
     private void genClassDiagram(){
         ClassDiagramGenerator cdg =  new ClassDiagramGenerator(inputFolder, outputFolder);
-        cdg.generate();
+        try {
+            cdg.generate();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            // TODO exit?
+        }
     }
 
     private void genSeqDiagram(){
