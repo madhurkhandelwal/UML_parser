@@ -28,10 +28,10 @@ public class Facade
         f.outputFolder = f.outputFolder.replaceFirst("^~", System.getProperty("user.home"));
 
         if (f.classDiagram){
-            f.genClassDiagram();
+            f.genClassDiagram(f.inputFolder, f.outputFolder);
         }
         if (f.seqDiagram){
-            f.genSeqDiagram();
+            f.genSeqDiagram(f.inputFolder, f.outputFolder);
         }
     }
 
@@ -45,11 +45,13 @@ public class Facade
         Option seqDiagramOpt = new Option("s", "Generate sequence diagram(s)");
         options.addOption( seqDiagramOpt );
 
-        Option inputOpt = new Option("i", "inputFolder", true, "input folder path");
+        Option inputOpt = new Option("i", "inputFolder",
+                                     true, "input folder path");
         inputOpt.setRequired(true);
         options.addOption(inputOpt);
 
-        Option outputOpt = new Option("o", "outputFolder", true, "output folder path");
+        Option outputOpt = new Option("o", "outputFolder",
+                                      true, "output folder path");
         outputOpt.setRequired(true);
         options.addOption(outputOpt);
 
@@ -74,11 +76,13 @@ public class Facade
             // TODO exit
         }
         // TODO use logger
-        System.out.println(String.format("Outpath: %s\nInput Folder: %s\nClass Diagram: %s\nSeq Diagram: %s",
+        System.out.println(String.format("Outpath: %s\nInput Folder: %s\n" +
+                                         "Class Diagram: %s\nSeq Diagram: %s",
                                          outputFolder, inputFolder, classDiagram, seqDiagram));
+        System.out.println("--------------------------------------------------------------------------------");
     }
 
-    private void genClassDiagram(){
+    static void genClassDiagram(String inputFolder, String outputFolder){
         ClassDiagramGenerator cdg =  new ClassDiagramGenerator(inputFolder, outputFolder);
         try {
             cdg.generate();
@@ -88,8 +92,13 @@ public class Facade
         }
     }
 
-    private void genSeqDiagram(){
+    static void genSeqDiagram(String inputFolder, String outputFolder){
         SeqDiagramGenerator sdg =  new SeqDiagramGenerator(inputFolder, outputFolder);
-        sdg.generate();
+        try {
+            sdg.generate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // TODO exit?
+        }
     }
 }
