@@ -13,7 +13,7 @@ import org.apache.commons.cli.ParseException;
 
 public class Facade
 {
-    private String inputFolder, outputFolder;
+    private String inputFolder, outputFolder, fileName="output.png";
     private boolean classDiagram=false, seqDiagram=false;
 
     private Facade(){
@@ -28,10 +28,10 @@ public class Facade
         f.outputFolder = f.outputFolder.replaceFirst("^~", System.getProperty("user.home"));
 
         if (f.classDiagram){
-            f.genClassDiagram(f.inputFolder, f.outputFolder);
+            f.genClassDiagram(f.inputFolder, f.outputFolder, f.fileName);
         }
         if (f.seqDiagram){
-            f.genSeqDiagram(f.inputFolder, f.outputFolder);
+            f.genSeqDiagram(f.inputFolder, f.outputFolder, f.fileName);
         }
     }
 
@@ -55,6 +55,11 @@ public class Facade
         outputOpt.setRequired(true);
         options.addOption(outputOpt);
 
+        Option fileNameOpt = new Option("n", "outputFileName",
+                true, "output file name");
+        fileNameOpt.setRequired(false);
+        options.addOption(fileNameOpt);
+
 
         CommandLineParser parser = new DefaultParser();
         CommandLine line;
@@ -68,8 +73,13 @@ public class Facade
             if( line.hasOption( "s" ) ) {
                 seqDiagram = true;
             }
+            if( line.hasOption("n")){
+                fileName = line.getOptionValue( "outputFileName" );
+            }
+
             inputFolder = line.getOptionValue( "inputFolder" );
             outputFolder = line.getOptionValue( "outputFolder" );
+
         }
         catch( ParseException exp ) {
             System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
@@ -82,8 +92,8 @@ public class Facade
         System.out.println("--------------------------------------------------------------------------------");
     }
 
-    static void genClassDiagram(String inputFolder, String outputFolder){
-        ClassDiagramGenerator cdg =  new ClassDiagramGenerator(inputFolder, outputFolder);
+    static void genClassDiagram(String inputFolder, String outputFolder, String outputFileName){
+        ClassDiagramGenerator cdg =  new ClassDiagramGenerator(inputFolder, outputFolder, outputFileName);
         try {
             cdg.generate();
         } catch (Exception e) {
@@ -92,8 +102,8 @@ public class Facade
         }
     }
 
-    static void genSeqDiagram(String inputFolder, String outputFolder){
-        SeqDiagramGenerator sdg =  new SeqDiagramGenerator(inputFolder, outputFolder);
+    static void genSeqDiagram(String inputFolder, String outputFolder, String outputFileName){
+        SeqDiagramGenerator sdg =  new SeqDiagramGenerator(inputFolder, outputFolder, outputFileName);
         try {
             sdg.generate();
         } catch (Exception e) {

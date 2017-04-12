@@ -29,15 +29,20 @@ import java.util.List;
 
 
 public class ClassDiagramGenerator{
-    private String inputFolder, outputFolder;
+    private String inputFolder, outputFolder, outputFileName;
     private HashMap<String, Boolean> isInterface; // contains all classes and interface within the proj dir
     private final String yumlURLstr = "https://yuml.me/diagram/plain/class/";
     private HashSet<String> compositionString, implementsSet, extendsSet;
     private HashMap<String, Boolean[]> mulMap;
 
     public ClassDiagramGenerator(String inputFolder, String outputFolder){
+        this(inputFolder, outputFolder, "output.png");
+    }
+
+    public ClassDiagramGenerator(String inputFolder, String outputFolder, String outputFileName){
         this.inputFolder = inputFolder;
         this.outputFolder = outputFolder;
+        this.outputFileName = outputFileName;
         isInterface = new HashMap<String, Boolean >();
         compositionString = new HashSet<String>();
         implementsSet = new HashSet<String>();
@@ -281,7 +286,7 @@ public class ClassDiagramGenerator{
         // TODO use try with resources
         try{
             // TODO use some inbuilt method to add 2 paths
-            outputFile = new FileOutputStream(outputFolder + "/classDiagram.png");
+            outputFile = new FileOutputStream(outputFolder + "/" + outputFileName);
             String finalURLStr = yumlURLstr + URLEncoder.encode(yumlString, "UTF-8") + ".png";
             // TODO use logging
             // System.out.println(yumlURLstr + yumlString + ".png");
@@ -308,7 +313,7 @@ public class ClassDiagramGenerator{
             while ((numBytes = is.read(buffer)) != -1) {
                 outputFile.write(buffer, 0, numBytes);
             }
-            System.out.println("Output file: " + outputFolder + "/classDiagram.png");
+            System.out.println("Output file: " + outputFolder + "/" + outputFileName);
         }catch (IOException ioe){
             // TODO handle it
             throw ioe;
