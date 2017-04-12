@@ -57,7 +57,7 @@ public class ClassDiagramGenerator{
         javaFiles = getAllJavaFiles(inputFolder);
         ArrayList<ClassOrInterfaceDeclaration> coiList = new ArrayList<ClassOrInterfaceDeclaration>();
         for (String javaFile : javaFiles){
-            System.out.println("Parsing java file: " + javaFile + "...");
+            // System.out.println("Parsing java file: " + javaFile + "...");
             cu = JavaParser.parse(new File(inputFolder, javaFile));
 
             // Assuming only classes or interfaces are present
@@ -211,12 +211,15 @@ public class ClassDiagramGenerator{
 
             //name
             String fName = field.toString().split(" ")[2];
-            String fType = field.toString().split(" ")[1].split("<.*>")[0];
-            //Mulitplicity
-            //TODO
+            String fType = field.toString().split(" ")[1]; // TODO take care of generics
+
             //static
             //TODO
-            attrs += fModifier + fName.split(";")[0] + ":" + fType + ";";
+            if(!updateCompositionDS(classInterfaceName, fType)) {
+                //TODO Mulitplicity
+                attrs += fModifier + fName.split(";")[0] + ":" + fType + ";";
+            }
+
         }
 
         if(!attrs.equals("") | !methodsString.equals("")) attrs = "|" + attrs; // TODO why methodString.eq...
@@ -276,7 +279,7 @@ public class ClassDiagramGenerator{
 
     private void generateImageFromYUMLString(String yumlString) throws IOException {
         // workaround for bug in yUML https://groups.google.com/forum/#!msg/yuml/HdKpszaIyKE/RpjRz_jPzNkJ
-        yumlString = yumlString.replace("[]", "\uFF3B\uFF3D");
+        yumlString = yumlString.replace("[]", "\uFF3B*\uFF3D"); // TODO move * to its inception
         yumlString = yumlString.replace("<<", "\uFF1C\uFF1C");
         yumlString = yumlString.replace(">>", "\uFF1E\uFF1E");
         HttpURLConnection con = null;
@@ -290,7 +293,7 @@ public class ClassDiagramGenerator{
             String finalURLStr = yumlURLstr + URLEncoder.encode(yumlString, "UTF-8") + ".png";
             // TODO use logging
             // System.out.println(yumlURLstr + yumlString + ".png");
-            System.out.println("\n" + finalURLStr);
+//            System.out.println("\n" + finalURLStr);
 
 //            System.out.println( URLEncoder.encode(yumlString, "UTF-8"));
 //            System.out.println(yumlString);
@@ -324,6 +327,8 @@ public class ClassDiagramGenerator{
     }
 
     private String getParametersString(String className, NodeList<Parameter> paras) {
+        // Gets the method/constructor parameters in yUML format
+        // Also update 'uses' set
         String mParas = "";
         for (Object methodChildNode : paras) {
             Parameter parameter = (Parameter) methodChildNode;
@@ -336,13 +341,16 @@ public class ClassDiagramGenerator{
             } else {
                 mParas += ("," + arg);
             }
-            updateCompositionDS(className, pType);
+            updateUsesString(className, pType);
         }
         return mParas;
     }
 
     // not verified
-    private void updateCompositionDS(String cName, String type){
+    private boolean updateCompositionDS(String cName, String type){
+        boolean updated=false;
+
+        // System.out.print(cName + " -> " + type + ": ");
         boolean many = false;
         String key;
         Boolean mul[] = {false, false};
@@ -378,8 +386,10 @@ public class ClassDiagramGenerator{
                     mul[1] = mul[1] | status[1];
                 }
                 mulMap.put(key, mul);
+                updated = true;
             }
-
+        // System.out.println(updated);
+        return updated;
     }
 
     // not verified
@@ -389,12 +399,8 @@ public class ClassDiagramGenerator{
             String temp[] = key.split("--");
             Boolean val[] = mulMap.get(key);
             String connector = "-";
-            if (val[0]){
-                connector = "*" + connector;
-            }
-            if (val[1]){
-                connector = connector + "*";
-            }
+            connector = (val[1]?"*":"1") + connector + (val[0]?"*":"1");
+
             retval += String.format("[%s]%s[%s]", temp[0], connector, temp[1]) + ",";
         }
         // TODO remove trailing comma
