@@ -392,45 +392,44 @@ public class ClassDiagramGenerator{
     // not verified
     private boolean updateCompositionDS(String cName, String type){
         boolean updated=false;
-
-        // System.out.print(cName + " -> " + type + ": ");
         boolean many = false;
         String key;
         Boolean mul[] = {false, false};
 
+        // TODO fix this
+        // 1. In case of use of our class in any generic declaration
+        // assuming its a collection
+        // 2. Assuming only one set of <> is used
+        if (type.matches(".*<.*>")) {
+            type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
+            many = true;
+        }
+        if (type.matches(".*[.*]")) {
+            many = true;
+        }
         if(isInterface.containsKey(type) && isInterface.get(type)){
             updateUsesString(cName, type);
-            type="<<interface>>;" + type;
         }
-            // TODO fix this
-            // 1. In case of use of our class in any generic declaration
-            // assuming its a collection
-            // 2. Assuming only one set of <> is used
-            if (type.matches(".*<.*>")) {
-                type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
-                many = true;
-            }
-            if (type.matches(".*[.*]")) {
-                many = true;
+
+        // System.out.print(cName + " -> " + type + ": ");
+
+        if (isInterface.containsKey(type)) {
+            if (type.compareTo(cName) >= 0){
+                if (many) mul[1] = true;
+                key = type + "--" + cName;
+            }else{
+                if (many) mul[0] = true;
+                key = cName + "--" + type;
             }
 
-            if (isInterface.containsKey(type)) {
-                if (type.compareTo(cName) >= 0){
-                    if (many) mul[1] = true;
-                    key = type + "--" + cName;
-                }else{
-                    if (many) mul[0] = true;
-                    key = cName + "--" + type;
-                }
-
-                if (mulMap.containsKey(key)) {
-                    Boolean status[] =  mulMap.get(key);
-                    mul[0] = mul[0] | status[0];
-                    mul[1] = mul[1] | status[1];
-                }
-                mulMap.put(key, mul);
-                updated = true;
+            if (mulMap.containsKey(key)) {
+                Boolean status[] =  mulMap.get(key);
+                mul[0] = mul[0] | status[0];
+                mul[1] = mul[1] | status[1];
             }
+            mulMap.put(key, mul);
+            updated = true;
+        }
         // System.out.println(updated);
         return updated;
     }
@@ -443,6 +442,12 @@ public class ClassDiagramGenerator{
             Boolean val[] = mulMap.get(key);
             String connector = "-";
             connector = (val[1]?"*":"1") + connector + (val[0]?"*":"1");
+
+            for (int i=0; i<temp.length; i++){
+                if(isInterface.get(temp[i])){
+                    temp[i] = "<<interface>>;" + temp[i];
+                }
+            }
 
             retval += String.format("[%s]%s[%s]", temp[0], connector, temp[1]) + ",";
         }
