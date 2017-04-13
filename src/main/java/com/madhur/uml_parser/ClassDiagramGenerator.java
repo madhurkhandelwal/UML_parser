@@ -49,7 +49,6 @@ public class ClassDiagramGenerator{
         implementsSet = new HashSet<String>();
         extendsSet= new HashSet<String>();
         mulMap = new HashMap<String, Boolean[]>();
-        methodsStringMap = new HashMap<String, ArrayList>();
     }
 
     private static ArrayList<ClassOrInterfaceDeclaration> getAllClassOrInterfaceDeclarations(String inputFolder) throws IOException{
@@ -85,6 +84,7 @@ public class ClassDiagramGenerator{
 
         // Get just the class diagrams without any relationships
         for(ClassOrInterfaceDeclaration coi: coiList){
+            methodsStringMap = new HashMap<String, ArrayList>(); // reset
             yumlString += getClassDiagramWithoutRelationshipString(coi) + ",";
         }
 
@@ -236,8 +236,14 @@ public class ClassDiagramGenerator{
             }
 
             //name
-            String fName = fieldString.split(" ")[2];
-            String fType = fieldString.split(" ")[1]; // TODO take care of generics
+            String fName = fieldString.split(" ")[2].split(";")[0];
+            String fType = fieldString.split(" ")[1].split(";")[0]; // TODO take care of generics
+
+            //check for gettersetter
+            if(fModifier == "-" && hasGetterSetter(fName, fType)){ //TODO what if fModifier is + and it has setters/ge..
+                fModifier = "+";
+                removeGettersSettersFromMap(fName);
+            }
 
 
             //static
@@ -442,5 +448,41 @@ public class ClassDiagramGenerator{
         }
         // TODO remove trailing comma
         return retval;
+    }
+
+    private boolean hasGetterSetter(String fName, String fType){
+        // TODO check for type
+        String getterStr = getGetterStr(fName);
+        String setterStr = getSetterStr(fName);
+
+        // Assuming getters and setters are not overloaded
+        if((methodsStringMap.containsKey(getterStr) && methodsStringMap.get(getterStr).get(0).toString().startsWith("+"))
+                && (methodsStringMap.containsKey(setterStr)  && methodsStringMap.get(getterStr).get(0).toString().startsWith("+"))){
+            // System.out.println(" true");
+            return true;
+        }else{
+            // System.out.println(" false");
+            return false;
+        }
+    }
+
+    private void removeGettersSettersFromMap(String fName){
+        String getterStr = getGetterStr(fName);
+        String setterStr = getSetterStr(fName);
+
+        if(methodsStringMap.containsKey(getterStr)){
+            methodsStringMap.remove(getterStr);
+        }
+        if (methodsStringMap.containsKey(setterStr)){
+            methodsStringMap.remove(setterStr);
+        }
+    }
+
+    private String getGetterStr(String fName){
+        return "get" + fName.toUpperCase().substring(0, 1) + fName.substring(1);
+    }
+
+    private String getSetterStr(String fName){
+        return "set" + fName.toUpperCase().substring(0, 1) + fName.substring(1);
     }
 }
