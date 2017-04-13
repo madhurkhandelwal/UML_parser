@@ -194,12 +194,32 @@ public class ClassDiagramGenerator{
         // Attributes
         List<FieldDeclaration> fields = coi.getFields();
         for(FieldDeclaration field: fields){
+            String fieldString = field.toString();
+
+            // hack to remove comments starting with //
+			// TODO take care of comments starting with /*
+            if (field.toString().startsWith("//")){
+                String lines[] = field.toString().split("\\R");
+                for(String line: lines){
+                    if(!line.startsWith("//")){
+                        fieldString = line;
+                        // System.out.println("####");
+                        // System.out.println(line);
+                        // System.out.println("####");
+                        break;
+                    }
+                }
+            }
+
             // Get modifier
             String fModifier = "";
-            String modifier = field.toString().split(" ")[0];
-            // for(String s: field.toString().split(" ")) {
-            //     System.out.println(s);
+            String modifier = fieldString.split(" ")[0];
+            // System.out.print("~~~~ ");
+            // for(String s: fieldString.split(" ")) {
+            //      System.out.print(s + " ");
             // }
+            // System.out.println("~~~~");
+
             if (modifier.equals("private")){
                 fModifier = "-";
             }else if(modifier.equals("public")){
@@ -210,8 +230,9 @@ public class ClassDiagramGenerator{
             }
 
             //name
-            String fName = field.toString().split(" ")[2];
-            String fType = field.toString().split(" ")[1]; // TODO take care of generics
+            String fName = fieldString.split(" ")[2];
+            String fType = fieldString.split(" ")[1]; // TODO take care of generics
+
 
             //static
             //TODO
