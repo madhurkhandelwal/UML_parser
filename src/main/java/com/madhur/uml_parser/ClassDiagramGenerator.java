@@ -34,6 +34,7 @@ public class ClassDiagramGenerator{
     private final String yumlURLstr = "https://yuml.me/diagram/plain/class/";
     private HashSet<String> compositionString, implementsSet, extendsSet;
     private HashMap<String, Boolean[]> mulMap;
+    private HashMap<String, ArrayList> methodsStringMap;
 
     public ClassDiagramGenerator(String inputFolder, String outputFolder){
         this(inputFolder, outputFolder, "output.png");
@@ -48,6 +49,7 @@ public class ClassDiagramGenerator{
         implementsSet = new HashSet<String>();
         extendsSet= new HashSet<String>();
         mulMap = new HashMap<String, Boolean[]>();
+        methodsStringMap = new HashMap<String, ArrayList>();
     }
 
     private static ArrayList<ClassOrInterfaceDeclaration> getAllClassOrInterfaceDeclarations(String inputFolder) throws IOException{
@@ -139,7 +141,7 @@ public class ClassDiagramGenerator{
 
     private String getClassDiagramWithoutRelationshipString(ClassOrInterfaceDeclaration coi) throws Exception {
         String yumlString;
-        String interfaceStr="", classInterfaceName, attrs="", methodsString="";
+        String interfaceStr="", classInterfaceName, attrs="";
         List<String> setterGetterAttributes;
 
         // Name and interface attribute
@@ -159,10 +161,12 @@ public class ClassDiagramGenerator{
                     
                     constructorParameters = getParametersString(classInterfaceName, cd.getParameters());
 
-                    if (!methodsString.equals("")) {
-                        methodsString += ";";
+                    ArrayList<String> methodStrList = new ArrayList<String>();
+                    if (methodsStringMap.containsKey(constructorName)){
+                        methodStrList =  methodsStringMap.get(constructorName);
                     }
-                    methodsString += String.format("%s%s(%s)", constructorAccessModifier, constructorName, constructorParameters);
+                    methodStrList.add(String.format("%s%s(%s)", constructorAccessModifier, constructorName, constructorParameters));
+                    methodsStringMap.put(constructorName, methodStrList);
                 }
                 parseMethodBody(classInterfaceName, (BodyDeclaration) bd);
             }
@@ -185,10 +189,12 @@ public class ClassDiagramGenerator{
 
             parseMethodBody(classInterfaceName, (BodyDeclaration) method);
 
-            if (!methodsString.equals("")) {
-                methodsString += ";";
+            ArrayList<String> methodStrList = new ArrayList<String>();
+            if (methodsStringMap.containsKey(mName)){
+                methodStrList =  methodsStringMap.get(mName);
             }
-            methodsString += String.format("%s%s(%s):%s", mModifier, mName, mParas, mReturnType);
+            methodStrList.add( String.format("%s%s(%s):%s", mModifier, mName, mParas, mReturnType));
+            methodsStringMap.put(mName, methodStrList);
         }
 
         // Attributes
@@ -242,6 +248,16 @@ public class ClassDiagramGenerator{
             }
 
         }
+
+        // Generate methodString
+        String methodsString="";
+        for(String methodName: methodsStringMap.keySet()){
+            ArrayList<String> methodStrLst =  methodsStringMap.get(methodName);
+            for(String methodStr: methodStrLst){
+                methodsString += methodStr + ";";
+            }
+        }
+
 
         if(!attrs.equals("") | !methodsString.equals("")) attrs = "|" + attrs; // TODO why methodString.eq...
         if(!methodsString.equals("")) methodsString = "|" + methodsString;
