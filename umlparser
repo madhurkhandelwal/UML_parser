@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+import shlex
+import subprocess
+import sys
+import glob
+import os
+import re
+
+paths = glob.glob("UML_parser-*-with-dependencies.jar")
+UML_PARSER_JAR = os.environ.get('UML_PARSER', None)
+if UML_PARSER_JAR is None:
+	paths = glob.glob("UML_parser-*-with-dependencies.jar")
+	if paths:
+		UML_PARSER_JAR = paths[0]
+	else:
+		print "Could not locate UML parser jar"
+		exit(-1)
+
+def parseArguments():
+	# TODO validate input arguments
+	return sys.argv[-2], sys.argv[-1]
+
+def unzip(inPath):
+	import zipfile
+	zip_ref = zipfile.ZipFile(inPath, 'r')
+	print "Unziping at %s..." % os.path.dirname(p)
+	zip_ref.extractall(os.path.dirname(p))
+	zip_ref.close()
+
+def launchUMLparser(inPath, outPath):
+	return subprocess.Popen(shlex.split(("java -jar %s -c -i %s -o %s") % 
+						(UML_PARSER_JAR, inPath, outPath)))
+
+if __name__ == '__main__':
+	inPath, outPath = parseArguments()
+	if re.match('.*\.zip', inPath):
+		inPath = unzip(inPath)
+	launchUMLparser(inPath, outPath)
