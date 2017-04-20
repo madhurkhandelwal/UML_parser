@@ -10,30 +10,48 @@ import re
 paths = glob.glob("UML_parser-*-with-dependencies.jar")
 UML_PARSER_JAR = os.environ.get('UML_PARSER', None)
 if UML_PARSER_JAR is None:
-	paths = glob.glob("UML_parser-*-with-dependencies.jar")
-	if paths:
-		UML_PARSER_JAR = paths[0]
-	else:
-		print "Could not locate UML parser jar"
-		exit(-1)
+    paths = glob.glob("UML_parser-*-with-dependencies.jar")
+    if paths:
+        UML_PARSER_JAR = paths[0]
+    else:
+        print "Could not locate UML parser jar"
+        exit(-1)
+
 
 def parseArguments():
-	# TODO validate input arguments
-	return sys.argv[-2], sys.argv[-1]
+    # TODO validate input arguments
+    return sys.argv[-2], sys.argv[-1]
+
 
 def unzip(inPath):
-	import zipfile
-	zip_ref = zipfile.ZipFile(inPath, 'r')
-	print "Unziping at %s..." % os.path.dirname(p)
-	zip_ref.extractall(os.path.dirname(p))
-	zip_ref.close()
+    import zipfile
+    zip_ref = zipfile.ZipFile(inPath, 'r')
+    print "Unziping at %s..." % os.path.dirname(inPath)
+    zip_ref.extractall(os.path.dirname(inPath))
+    zip_ref.close()
 
-def launchUMLparser(inPath, outPath):
-	return subprocess.Popen(shlex.split(("java -jar %s -c -i %s -o %s") % 
-						(UML_PARSER_JAR, inPath, outPath)))
+
+def launchClassDiagramGenerator(inPath, outPath):
+    return subprocess.call(shlex.split(("java -jar %s -c -i %s -o %s") %
+                                       (UML_PARSER_JAR, inPath, outPath)))
+
+
+def launchSequenceDiagramGenerator(inPath, outPath):
+    # compile using aspectj
+    # run
+    pass
+
 
 if __name__ == '__main__':
-	inPath, outPath = parseArguments()
-	if re.match('.*\.zip', inPath):
-		inPath = unzip(inPath)
-	launchUMLparser(inPath, outPath)
+    inPath, outPath = parseArguments()
+
+    # Unzip if a zip file is given
+    if re.match('.*\.zip', inPath):
+        inPath = unzip(inPath)
+
+    # As per the requirements, if sequence is mentioned in the input file,
+    #  generate sequence diagram else class diagram
+    if re.match('.*sequence.*', inPath, re.I):
+        launchSequenceDiagramGenerator(inPath, outPath)
+    else:
+        launchClassDiagramGenerator(inPath, outPath)
