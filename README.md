@@ -1,12 +1,13 @@
-# UML_parser
+Generate UML class<!-- /sequence --> diagram for the given Java Files
 
- Parser which converts Java Source Code into a UML Class Diagram.
- 
-Current plan is to use JavaParser(https://github.com/javaparser/javaparser) for parsing and yUML for genration of UML diagram.
- 
-## How to run?
- ```umlparser <source folder> <output file name>```
+Requirments:
+    1. Java 1.8 or later
+    2. Apache Maven 3.3.9 or later
+    3. Python 2.7
 
+Steps:
+    1. Download zip file from https://www.dropbox.com/sh/0nm0sevnb0tacim/AAA1LX7C7PIQDDmGslFLgClHa
+    2. Extract the zip file to the any location and traverse there
+    3. Run './umlparser <inputPath> <outputPath>'
 
-\<source folder\> is the folder name where all the .java source files will be
-\<output file name\> is the name of the output image file the program will generate
+<!-- NOTE: In order to generate sequence diagram, 'inputPath' should contain the word 'sequence' (case insensitive). Sequence diagram would start by calling Main.main() from the given Java files. -->
