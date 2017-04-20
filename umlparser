@@ -37,8 +37,15 @@ def launchClassDiagramGenerator(inPath, outPath):
 
 
 def launchSequenceDiagramGenerator(inPath, outPath):
-    # compile using aspectj
-    # run
+    jarFile = compileAspectJ(inPath)
+    runAspectJ(jarFile, outPath)
+
+
+def compileAspectJ(inPath):
+    pass
+
+
+def runAspectJ(jarFile, outPath):
     pass
 
 
