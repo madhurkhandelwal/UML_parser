@@ -38,11 +38,10 @@ def launchClassDiagramGenerator(inPath, outPath):
 
 
 def launchSequenceDiagramGenerator(inPath, outPath):
-    jarFile = compileAspectJ(inPath)
-    runAspectJ(jarFile, outPath)
+    compileAndRunAspectJ(inPath)
 
 
-def compileAspectJ(inPath):
+def compileAndRunAspectJ(inPath):
     javaFiles = glob.glob(os.path.join(inPath, "*.java"))
     for javaFile in javaFiles:
         shutil.copy(javaFile,
@@ -51,7 +50,11 @@ def compileAspectJ(inPath):
                                  "src",
                                  "main",
                                  "java"))
-    retval = subprocess.Popen("mvn clean compile assembly:single",
+    # TODO just compile with mvn and then run it using java
+    # currently there is a bug in my SequenceDiagramGenerator.aj code
+    # which does stupid things if we directly call Main class from jvm
+    # instead of jvm -> junit -> test class -> Main.main()
+    retval = subprocess.Popen("mvn clean test",
                               cwd=os.path.join(os.path.dirname(
                                                os.path.abspath(__file__)),
                                                "SequenceDiagramGenerator"),
@@ -66,19 +69,6 @@ def compileAspectJ(inPath):
                                "main",
                                "java",
                                os.path.basename(javaFile)))
-    return glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                  "SequenceDiagramGenerator",
-                                  "target",
-                                  "UML_parser_seq-*-"
-                                  "SNAPSHOT-jar-with-dependencies.jar"))[0]
-
-
-def runAspectJ(jarFile, outPath):
-    subprocess.Popen("java -jar %s" % jarFile,
-                     shell=True).wait()
-    # TODO delete jar file
-    # TODO move png file to outPath
-
 
 if __name__ == '__main__':
     inPath, outPath = parseArguments()
