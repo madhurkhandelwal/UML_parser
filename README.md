@@ -1,14 +1,15 @@
-Generate UML classclass/sequence diagram for the given Java Files
+# UML Parser
+Generate UML Java classclass/sequence diagram
 
-Requirments:
+### Requirments:
 1. Java 1.8 or later
 2. Apache Maven 3.3.9 or later
 3. Python 2.7
 
-Steps:
+### Steps:
 1. Clone this repo
-2. Run './umlparser '
+2. Run  ```./umlparser <inputFolder> <ouputFile or outputFolder>```
 
-NOTE:
+#### NOTE:
 1. All java files to be analysed need to be in the default package
 2. In order to generate sequence diagram, 'inputPath' should contain the word 'sequence' (case insensitive). Sequence diagram would start by calling Main.main() from the given Java files.
