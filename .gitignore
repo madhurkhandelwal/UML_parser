@@ -1,3 +1,11 @@
 *.class
 *.pyc
 .DS_Store
+.classpath
+.idea/
+.project
+SequenceDiagramGenerator/target/
+UML_parser.iml
+UML_parser.sublime-project
+UML_parser.sublime-workspace
+target/
