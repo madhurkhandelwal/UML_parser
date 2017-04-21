@@ -28,9 +28,14 @@ def parseArguments():
 def unzip(inPath):
     import zipfile
     zip_ref = zipfile.ZipFile(inPath, 'r')
-    print "Unziping at %s..." % os.path.dirname(inPath)
-    zip_ref.extractall(os.path.dirname(inPath))
+
+    folderName = os.path.basename(inPath).split('.')[0]
+    outputFolder = os.path.join(os.path.dirname(inPath), folderName)
+
+    print "Unziping at %s..." % outputFolder
+    zip_ref.extractall(outputFolder)
     zip_ref.close()
+    return outputFolder
 
 
 def launchClassDiagramGenerator(inPath, outPath):
@@ -94,6 +99,8 @@ def compileAndRunAspectJ(inPath, outPath):
 
 if __name__ == '__main__':
     inPath, outPath = parseArguments()
+    inPath = os.path.abspath(inPath)
+    outPath = os.path.abspath(outPath)
 
     # Unzip if a zip file is given
     if re.match('.*\.zip', inPath):

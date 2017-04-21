@@ -8,7 +8,7 @@ Generate UML Java class/sequence diagram
 
 ### Steps:
 1. Clone this repo
-2. Run  ```./umlparser <inputFolder> <ouputFile or outputFolder>```
+2. Run  ```./umlparser <input folder or zip file> <output folder or file>```
 
 #### NOTE:
 1. All java files to be analysed need to be in the default package
