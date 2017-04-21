@@ -1,9 +1,16 @@
 // TODO change the name of the file/class
+
+// Creates sequence diagram in the target folder of maven
+// TODO change it not depend on mvn target folder
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.FileWriter;
+import java.io.File;
 import java.util.Stack;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -82,10 +89,14 @@ public aspect SequenceDiagramGenerator{
         //           planUMLGrammar +
         //           "\n@enduml");
         // System.out.println("_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+");
-        createImage("@startuml\n" + 
-                  planUMLGrammar +
-                  "\n@enduml",
-                  "/Users/mak/Downloads/temp/mak.png");
+
+        String jarFileLoc = Counter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        File file = new File(jarFileLoc);
+        String parentPath = file.getAbsoluteFile().getParent();
+        Path path = Paths.get(parentPath, "sequenceDiagram.png");
+        String outputPath = path.toString();
+
+        createImage("@startuml\n" + planUMLGrammar + "\n@enduml", outputPath);
     }
 
     before(): createSeqImage(){
