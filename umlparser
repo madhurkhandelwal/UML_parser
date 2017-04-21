@@ -33,8 +33,16 @@ def unzip(inPath):
 
 
 def launchClassDiagramGenerator(inPath, outPath):
-    return subprocess.call(shlex.split(("java -jar %s -c -i %s -o %s") %
-                                       (UML_PARSER_JAR, inPath, outPath)))
+    if os.path.isdir(outPath):
+        outputFileName = "classDiagram.png"
+        outputFolder = outPath
+    else:
+        outputFolder = os.path.dirname(outPath)
+        outputFileName = os.path.basename(outPath)
+    subprocess.call(shlex.split(("java -jar %s -c -i %s -o %s -n %s") %
+                                (UML_PARSER_JAR, inPath, outputFolder,
+                                 outputFileName)))
+    print "Output file: %s" % (os.path.join(outputFolder, outputFileName))
 
 
 def launchSequenceDiagramGenerator(inPath, outPath):

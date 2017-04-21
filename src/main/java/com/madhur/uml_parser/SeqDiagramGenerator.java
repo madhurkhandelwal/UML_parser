@@ -10,6 +10,6 @@ public class SeqDiagramGenerator {
     }
 
     public void generate(){
-        System.out.println("Generating sequence diagram(s)...");
+        System.out.println("TODO");
     }
 }

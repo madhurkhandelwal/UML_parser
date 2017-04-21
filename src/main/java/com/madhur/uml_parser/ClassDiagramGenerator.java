@@ -359,7 +359,7 @@ public class ClassDiagramGenerator{
             while ((numBytes = is.read(buffer)) != -1) {
                 outputFile.write(buffer, 0, numBytes);
             }
-            System.out.println("Output file: " + outputFolder + "/" + outputFileName);
+            // System.out.println("Output file: " + outputFolder + "/" + outputFileName);
         }catch (IOException ioe){
             // TODO handle it
             throw ioe;
