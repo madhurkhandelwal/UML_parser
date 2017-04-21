@@ -51,11 +51,14 @@ def compileAspectJ(inPath):
                                  "src",
                                  "main",
                                  "java"))
-    subprocess.Popen("mvn clean compile assembly:single",
-                     cwd=os.path.join(os.path.dirname(
-                                      os.path.abspath(__file__)),
-                                      "SequenceDiagramGenerator"),
-                     shell=True).wait()
+    retval = subprocess.Popen("mvn clean compile assembly:single",
+                              cwd=os.path.join(os.path.dirname(
+                                               os.path.abspath(__file__)),
+                                               "SequenceDiagramGenerator"),
+                              shell=True).wait()
+    if retval != 0:
+        print "Error compiling!"
+        exit(retval)
     for javaFile in javaFiles:
         os.remove(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                "SequenceDiagramGenerator",
