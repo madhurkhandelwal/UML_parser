@@ -1,5 +1,5 @@
 # UML Parser
-Generate UML Java classclass/sequence diagram
+Generate UML Java class/sequence diagram
 
 ### Requirments:
 1. Java 1.8 or later
