@@ -6,6 +6,7 @@ import sys
 import glob
 import os
 import re
+import shutil
 
 paths = glob.glob("UML_parser-*-with-dependencies.jar")
 UML_PARSER_JAR = os.environ.get('UML_PARSER', None)
@@ -42,11 +43,38 @@ def launchSequenceDiagramGenerator(inPath, outPath):
 
 
 def compileAspectJ(inPath):
-    pass
+    javaFiles = glob.glob(os.path.join(inPath, "*.java"))
+    for javaFile in javaFiles:
+        shutil.copy(javaFile,
+                    os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 "SequenceDiagramGenerator",
+                                 "src",
+                                 "main",
+                                 "java"))
+    subprocess.Popen("mvn clean compile assembly:single",
+                     cwd=os.path.join(os.path.dirname(
+                                      os.path.abspath(__file__)),
+                                      "SequenceDiagramGenerator"),
+                     shell=True).wait()
+    for javaFile in javaFiles:
+        os.remove(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "SequenceDiagramGenerator",
+                               "src",
+                               "main",
+                               "java",
+                               os.path.basename(javaFile)))
+    return glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                  "SequenceDiagramGenerator",
+                                  "target",
+                                  "UML_parser_seq-*-"
+                                  "SNAPSHOT-jar-with-dependencies.jar"))[0]
 
 
 def runAspectJ(jarFile, outPath):
-    pass
+    subprocess.Popen("java -jar %s" % jarFile,
+                     shell=True).wait()
+    # TODO delete jar file
+    # TODO move png file to outPath
 
 
 if __name__ == '__main__':
