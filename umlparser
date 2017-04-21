@@ -38,10 +38,11 @@ def launchClassDiagramGenerator(inPath, outPath):
 
 
 def launchSequenceDiagramGenerator(inPath, outPath):
-    compileAndRunAspectJ(inPath)
+    outputFile = compileAndRunAspectJ(inPath, outPath)
+    print "Output file: %s" % (outputFile)
 
 
-def compileAndRunAspectJ(inPath):
+def compileAndRunAspectJ(inPath, outPath):
     javaFiles = glob.glob(os.path.join(inPath, "*.java"))
     for javaFile in javaFiles:
         shutil.copy(javaFile,
@@ -69,6 +70,18 @@ def compileAndRunAspectJ(inPath):
                                "main",
                                "java",
                                os.path.basename(javaFile)))
+    outputFileName = "sequenceDiagram.png"
+
+    outputFile = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "SequenceDiagramGenerator",
+                              "target",
+                              outputFileName)
+    shutil.copy(outputFile, outPath)
+    if os.path.isdir(outPath):
+        return os.path.join(outPath, outputFileName)
+    else:
+        return outPath
+
 
 if __name__ == '__main__':
     inPath, outPath = parseArguments()
