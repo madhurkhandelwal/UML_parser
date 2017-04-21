@@ -16,6 +16,7 @@ if UML_PARSER_JAR is None:
         UML_PARSER_JAR = paths[0]
     else:
         print "Could not locate UML parser jar"
+        print "You may try running 'bash setup.sh'"
         exit(-1)
 
 
