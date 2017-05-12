@@ -230,6 +230,8 @@ public class ClassDiagramGenerator{
                 fModifier = "-";
             }else if(modifier.equals("public")){
                 fModifier = "+";
+            }else if(modifier.equals("protected")){
+                fModifier = "#";
             }
             else{
                 continue;
