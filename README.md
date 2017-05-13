@@ -27,6 +27,9 @@ Generate UML Java class/sequence diagram
  eg. ```python umlparser testData/uml-parser-test-4 .```
 
  eg. ```python umlparser testData/uml-sequence-test .```
+ 
+### Demo:
+https://youtu.be/7FLgLG4vTKA?t=51
 
 #### NOTE:
 1. All java files to be analysed need to be in the default package
