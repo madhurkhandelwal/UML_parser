@@ -23,8 +23,10 @@ Generate UML Java class/sequence diagram
 1. Clone this repo
 2. Run ```./setup.sh``` to create the jar file if not present
 3. Run  ```python umlparser <input folder or zip file> <output folder or file>```
-	eg. ```python umlparser testData/uml-parser-test-4 .```
-	eg. ```python umlparser testData/uml-sequence-test .```
+
+ eg. ```python umlparser testData/uml-parser-test-4 .```
+
+ eg. ```python umlparser testData/uml-sequence-test .```
 
 #### NOTE:
 1. All java files to be analysed need to be in the default package
